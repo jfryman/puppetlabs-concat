@@ -57,7 +57,7 @@ define concat(
   $gnu = undef,
   $order='alpha',
   $ensure_newline = false,
-  $sedfile = undef
+  $toggle_file = undef
 ) {
   include concat::setup
 
@@ -122,10 +122,10 @@ define concat(
     }
   }
 
-  if $sedfile {
-    $sedflag = "-s ${sedfile}"
+  if $toggle_file {
+    $toggle_flag = "-s ${toggle_file}"
   } else {
-    $sedflag = ''
+    $toggle_flag = ''
   }
 
   File {
@@ -175,7 +175,7 @@ define concat(
 
   exec { "concat_${name}":
     alias       => "concat_${fragdir}",
-    command     => "${concat::setup::concatdir}/bin/concatfragments.sh -o ${fragdir}/${concat_name} -d ${fragdir} ${warnflag} ${forceflag} ${orderflag} ${newlineflag} ${sedflag}",
+    command     => "${concat::setup::concatdir}/bin/concatfragments.sh -o ${fragdir}/${concat_name} -d ${fragdir} ${warnflag} ${forceflag} ${orderflag} ${newlineflag} ${toggle_flag}",
     notify      => File[$name],
     require     => [
       File[$fragdir],
@@ -183,7 +183,7 @@ define concat(
       File["${fragdir}/fragments.concat"],
     ],
     subscribe   => File[$fragdir],
-    unless      => "${concat::setup::concatdir}/bin/concatfragments.sh -o ${fragdir}/${concat_name} -d ${fragdir} -t ${warnflag} ${forceflag} ${orderflag} ${newlineflag} ${sedflag}",
+    unless      => "${concat::setup::concatdir}/bin/concatfragments.sh -o ${fragdir}/${concat_name} -d ${fragdir} -t ${warnflag} ${forceflag} ${orderflag} ${newlineflag} ${toggle_flag}",
   }
 
   if $::id == 'root' {
