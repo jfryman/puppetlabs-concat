@@ -61,6 +61,7 @@ while getopts "o:s:d:tnw:fl" options; do
 		f ) FORCE="true";;
 		t ) TEST="true";;
 		l ) ENSURE_NEWLINE="true";;
+    s ) SEDFILTER=$OPTARG;;
 		* ) echo "Specify output file with -o and fragments directory with -d"
 		    exit 1;;
 	esac
@@ -123,7 +124,11 @@ IFS='
 '
 for fragfile in `find fragments/ -type f -follow | LANG=C sort ${SORTARG}`
 do
+if [ -s $SEDFILTER ]; then
+    cat $fragfile | sed -f $SEDFILTER >> "fragments.concat"
+else
     cat $fragfile >> "fragments.concat"
+fi
 done
 IFS=$IFS_BACKUP
 
